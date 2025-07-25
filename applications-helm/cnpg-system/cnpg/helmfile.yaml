@@ -1,0 +1,17 @@
+repositories:
+- name:  cnpg
+  url: https://cloudnative-pg.github.io/charts
+
+releases:
+- name: cnpg
+  chart: cnpg/cloudnative-pg
+  version: 0.25.0
+  jsonPatches:
+  - target:
+      kind: CustomResourceDefinition
+      version: v1
+    patch:
+      - op: add
+        path: "/metadata/annotations/argocd.argoproj.io~1sync-options"
+        value: "ServerSideApply=true"
+

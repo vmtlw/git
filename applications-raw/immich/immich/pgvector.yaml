@@ -1,0 +1,46 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg-vector
+spec:
+  description: "vectordatabase for immich"
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+  enableSuperuserAccess: true
+  instances: 1
+  startDelay: 300
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      secret:
+        name: immich-pg-user
+      postInitTemplateSQL:
+        - CREATE EXTENSION IF NOT EXISTS vector;
+        - CREATE EXTENSION IF NOT EXISTS cube;
+        - CREATE EXTENSION IF NOT EXISTS earthdistance;
+
+      database: immich
+  storage:
+    storageClass: nfs-csi
+    size: 2Gi
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "1"
+    limits:
+      memory: "1Gi"
+      cpu: "1"
+  monitoring:
+    enablePodMonitor: true
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: immich-pg-user
+  namespace: immich
+data:
+  username: aW1taWNo
+  password: aW1taWNo
+type: kubernetes.io/basic-auth

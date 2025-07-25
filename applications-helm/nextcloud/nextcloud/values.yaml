@@ -1,0 +1,80 @@
+replicaCount: 1
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/proxy-body-size: 4G
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/hsts: "true"
+    nginx.ingress.kubernetes.io/hsts-max-age: "15552000"
+    nginx.ingress.kubernetes.io/hsts-include-subdomains: "true"
+    nginx.ingress.kubernetes.io/hsts-preload: "true"
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /.well-known/carddav {
+            return 301 $scheme://$host/remote.php/dav;
+        }
+  
+        location /.well-known/caldav {
+            return 301 $scheme://$host/remote.php/dav;
+        }
+  
+        location ^~ /.well-known {
+            return 301 $scheme://$host/index.php$uri;
+        }
+
+  tls:
+    - secretName: nextcloud-tls
+      hosts:
+        - cloud.vmtlw.ru
+  labels: {}
+  path: /
+  pathType: Prefix
+
+
+
+nextcloud:
+  host: cloud.vmtlw.ru
+#  username: admin
+#  password: changeme
+  ## Use an existing secret
+  existingSecret:
+    enabled: true
+    secretName: admin-secret
+    usernameKey: nextcloud-username
+    passwordKey: nextcloud-password
+  mail:
+    enabled: false
+  objectStore:
+    s3:
+      enabled: false
+
+
+redis:
+  enabled: true
+
+postgresql:
+  enabled: true
+  global:
+    postgresql:
+      auth:
+        username: nextcloud
+        password: nextcloud
+        database: nextcloud
+  primary:
+    persistence:
+      enabled: true
+
+phpClientHttpsFix:
+  enabled: true
+  protocol: https
+
+
+cronjob:
+  enabled: false
+
+persistence:
+  enabled: true
+  nextcloudData:
+    enabled: true
+

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailserver
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mailserver
+  template:
+    metadata:
+      labels:
+        app: mailserver
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      restartPolicy: Always
+      containers:
+        - name: mailserver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: 300m
+              memory: 700Mi
+            requests:
+              cpu: 20m
+              memory: 270Mi
+          ports:
+            - containerPort: 25
+            - containerPort: 110
+            - containerPort: 143
+            - containerPort: 587
+            - containerPort: 993
+            - containerPort: 995
+            - containerPort: 4190
+            - containerPort: 80
+          securityContext:
+            privileged: true
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: webmail
+              mountPath: /opt/www/webmail
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: posteio-data
+        - name: webmail
+          persistentVolumeClaim:
+            claimName: posteio-webmail
+

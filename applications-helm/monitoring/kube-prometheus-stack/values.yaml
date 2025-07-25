@@ -1,0 +1,52 @@
+grafana:
+  enabled: true
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - grafana.vmtlw.ru
+    path: /
+    tls:
+      - secretName: grafana-general-tls
+        hosts:
+          - grafana.vmtlw.ru
+    persistence:
+      enabled: true
+      storageClassName: "nfs-csi"
+      accessModes:
+        - ReadWriteOnce
+      size: 20Gi
+      finalizers:
+        - kubernetes.io/pvc-protection
+
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+     storage:
+       volumeClaimTemplate:
+         spec:
+           storageClassName: nfs-csi
+           accessModes: ["ReadWriteOnce"]
+           resources:
+             requests:
+               storage: 10Gi
+
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-csi
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 50Gi
+    additionalScrapeConfigs:
+      - job_name: 'external-node'
+        scrape_interval: 15s
+        static_configs:
+          - targets: ['10.0.0.5:9100']

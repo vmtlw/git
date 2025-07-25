@@ -1,0 +1,10 @@
+repositories:
+- name: minecraft-server-charts
+  url: https://itzg.github.io/minecraft-server-charts/
+
+releases:
+- name: minecraft
+  chart: minecraft-server-charts/minecraft
+  version: 4.26.4
+  values:
+  - ./values.yaml

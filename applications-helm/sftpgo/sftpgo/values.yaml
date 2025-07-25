@@ -1,0 +1,35 @@
+ui:
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: ftp.vmtlw.ru
+        paths:
+          - path: /
+            pathType: Prefix
+
+    tls:
+      - secretName: chart-tls
+        hosts:
+          - ftp.vmtlw.ru
+ftpd:
+  enabled: true
+
+webdavd:
+  enabled: false
+
+envVars:
+  - name: SFTPGO_DISABLE_FS_CHECKS
+    value: "true"
+
+
+persistence:
+  enabled: true
+  pvc:
+    storageClassName: "nfs-csi"
+
+
+
+# солздавайте папки пользователей по пути /var/lib/sftpgo/<USERNAME> так как имено   /var/lib/sftpgo вынесен в pvc 

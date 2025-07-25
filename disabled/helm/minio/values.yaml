@@ -1,0 +1,43 @@
+replicas: 1
+extraArgs:
+  - --console-address=:9001
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "nfs-csi"
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  path: /
+  hosts:
+    - s3.vmtlw.ru
+  tls: 
+    - secretName: tls
+      hosts:
+        - s3.vmtlw.ru
+mode: standalone
+
+consoleIngress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  path: /
+  hosts:
+    - s3-admin.vmtlw.ru
+  tls: 
+    - secretName: admin-tls
+      hosts:
+        - s3-admin.vmtlw.ru
+
+
+consoleService:
+  type: ClusterIP
+  port: "443"

@@ -1,0 +1,34 @@
+image:
+  repository: analogic/poste.io
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+hostname: mail.vmtlw.ru
+
+env:
+  - name: TZ
+    value: "Europe/Moscow"
+  - name: DISABLE_RSPAMD
+    value: "TRUE"
+  - name: DISABLE_CLAMAV
+    value: "TRUE"
+
+# c включенными RSPAMD и CLAMAV потребление оперативной памяти подов возврастает до 1700 мбайт против 300 в обыном режиме , это номально , если хотите их включить не забудьте добавить ресурсов в deployment а то под задохнется
+
+persistence:
+  data:
+    enabled: true
+    size: 10Gi
+  webmail:
+    enabled: true
+    size: 1Gi
+
+ingress:
+  enabled: true
+  host: mail.vmtlw.ru
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0

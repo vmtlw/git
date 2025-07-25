@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: torrserver
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: torrserver
+  template:
+    metadata:
+      labels:
+        app: torrserver
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      restartPolicy: Always
+      containers:
+        - name: torrserver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            limits:
+              cpu: 800m
+              memory: 500Mi
+            requests:
+              cpu: 40m
+              memory: 300Mi
+          ports:
+            - containerPort: 8090
+          securityContext:
+            privileged: false
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          volumeMounts:
+            - name: db
+              mountPath: /torrserver/db
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db

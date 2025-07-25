@@ -1,0 +1,10 @@
+repositories:
+- name: gitlab
+  url: https://charts.gitlab.io
+
+releases:
+- name: gitlab
+  chart: gitlab/gitlab-runner
+  version: 0.78.1
+  values:
+  - ./values.yaml

@@ -1,0 +1,49 @@
+replicaCount: 1
+valkey-cluster:
+  enabled: false
+valkey:
+  enabled: true
+  primary:
+    replicas: 1
+postgresql:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClass: nfs-csi
+postgresql-ha:
+  enabled: false
+persistence:
+  enabled: true
+  storageClass: nfs-csi
+gitea:
+  admin:
+    existingSecret: gitea-admin-secret
+  config:
+    database:
+      DB_TYPE: postgres
+    indexer:
+      ISSUE_INDEXER_TYPE: bleve
+      REPO_INDEXER_ENABLED: true
+    mailer:
+      ENABLED: true
+      PROTOCOL: smtp+starttls
+      SMTP_ADDR: mail.vmtlw.ru
+      SMTP_PORT: 587
+      FROM: "Forgejo <admin@vmtlw.ru>"
+      SUBJECT_PREFIX: "[Forgejo]"
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 3000m
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: git.vmtlw.ru
+      paths:
+        - path: /
+          pathType: Prefix
+          port: http
+  tls:
+    - secretName: git-vmtlw-ru-tls
+      hosts:
+        - git.vmtlw.ru

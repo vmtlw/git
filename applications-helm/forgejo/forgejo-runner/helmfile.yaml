@@ -1,0 +1,6 @@
+releases:
+- name: forgejo-runner
+  chart: oci://codeberg.org/wrenix/helm-charts/forgejo-runner
+  version:  0.6.4
+  values:
+  - ./values.yaml

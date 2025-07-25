@@ -1,0 +1,4 @@
+name: posteio
+description: Helm chart for Poste.io mailserver
+version: 0.1.0
+appVersion: "v2"

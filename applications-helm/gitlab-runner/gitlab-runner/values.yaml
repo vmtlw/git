@@ -1,0 +1,52 @@
+gitlabUrl: https://gitlab.com/
+concurrent: 10
+checkInterval: 30
+
+extraEnv:
+  CACHE_S3_SERVER_ADDRESS: s3.vmtlw.ru
+  CACHE_S3_BUCKET_NAME: gitlab-runner
+  CACHE_S3_BUCKET_LOCATION: ""
+  CACHE_SHARED: true
+rbac:
+  create: true
+unregisterRunners: true
+
+serviceAccount:
+  create: true
+  name: gitlab-runner
+
+runners:
+  secret: gitlab-runner
+  cache:
+    secretName: s3access
+  secretVariable: runner-registration-token
+  config: |
+    [[runners]]
+      name = "k8s-runner"
+      url = "https://gitlab.com/"
+      token = "$REGISTRATION_TOKEN"
+      executor = "kubernetes"
+      [runners.kubernetes]
+        namespace = "gitlab-runner"
+        image = "alpine:latest"
+        privileged = true
+        cpu_request = "100m"
+        memory_request = "128Mi"
+        cpu_limit = "2"
+        memory_limit = "6G"
+      [runners.cache]
+        Type = "s3"
+        Path = "/"
+        Shared = true
+        [runners.cache.s3]
+          ServerAddress = "s3.vmtlw.ru"
+          AccessKey = "gitlab-runner-key"
+          SecretKey = "gitlab-runner-key"
+          BucketName = "gitlab-runner"
+          BucketLocation = ""
+
+  runUntagged: false
+  locked: false
+  tagList:
+    - kubernetes
+  privileged: true

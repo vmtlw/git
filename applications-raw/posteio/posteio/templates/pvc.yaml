@@ -1,0 +1,25 @@
+{{- if .Values.persistence.data.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: posteio-data
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: {{ .Values.persistence.data.size }}
+{{- end }}
+
+{{- if .Values.persistence.webmail.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: posteio-webmail
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: {{ .Values.persistence.webmail.size }}
+{{- end }}
+

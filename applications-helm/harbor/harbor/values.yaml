@@ -1,0 +1,173 @@
+expose:
+  type: ingress
+  tls:
+    enabled: true
+    certSource: secret
+    secret:
+      secretName: "registry-vmtlw-ru-tls"
+  ingress:
+    hosts:
+      core: registry.vmtlw.ru
+    className: "nginx"
+    annotations:
+      # note different ingress controllers may require a different ssl-redirect annotation
+      # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "180"
+      nginx.ingress.kubernetes.io/proxy-read-timeout:    "180"
+      nginx.ingress.kubernetes.io/proxy-send-timeout:    "180"
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "17000m"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "17000m"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+externalURL: https://registry.vmtlw.ru
+
+ipFamily:
+  ipv6:
+    enabled: false
+
+persistence:
+  enabled: true
+  resourcePolicy: "keep"
+  persistentVolumeClaim:
+    registry:
+      storageClass: "nfs-csi"
+      size: 1Gi
+    jobservice:
+      jobLog:
+        storageClass: "nfs-csi"
+        size: 1Gi
+    redis:
+      storageClass: "nfs-csi"
+      size: 1Gi
+    trivy:
+      storageClass: "nfs-csi"
+      size: 1Gi
+  imageChartStorage:
+    disableredirect: true
+updateStrategy:
+  type: Recreate
+
+proxy:
+  httpProxy:
+  httpsProxy:
+  noProxy: 127.0.0.1,localhost,.local,.internal
+  components:
+    - core
+    - jobservice
+    - trivy
+
+portal:
+  replicas: 1
+  revisionHistoryLimit: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 205M
+    limits:
+      cpu: 100m
+      memory: 205M
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - harbor
+              - key: component
+                operator: In
+                values:
+                  - portal
+          topologyKey: "kubernetes.io/hostname"
+
+core:
+  replicas: 1
+  revisionHistoryLimit: 3
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - harbor
+              - key: component
+                operator: In
+                values:
+                  - core
+          topologyKey: "kubernetes.io/hostname"
+  configureUserSettings:
+  quotaUpdateProvider: db
+  resources:
+    requests:
+      cpu: 100m
+      memory: 300M
+    limits:
+      cpu: 100m
+      memory: 300M
+
+jobservice:
+  replicas: 1
+  revisionHistoryLimit: 3
+  maxJobWorkers: 10
+  resources:
+    requests:
+      cpu: 15m
+      memory: 105M
+    limits:
+      cpu: 15m
+      memory: 105M
+
+registry:
+  replicas: 1
+  revisionHistoryLimit: 3
+  resources:
+    requests:
+      cpu: 100m
+      memory: 253M
+    limits:
+      cpu: 100m
+      memory: 253M
+  relativeurls: false
+  upload_purging:
+    enabled: true
+    age: 168h
+    interval: 24h
+    dryrun: false
+
+trivy:
+  enabled: true
+  replicas: 1
+  debugMode: false
+  vulnType: "os,library"
+  severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+  ignoreUnfixed: false
+  insecure: true
+  gitHubToken: ""
+  skipUpdate: false
+  offlineScan: false
+  securityCheck: "vuln"
+  timeout: 5m0s
+  resources:
+    requests:
+      cpu: 15m
+      memory: 164M
+    limits:
+      cpu: 15m
+      memory: 164M
+  affinity: {}
+
+exporter:
+  replicas: 1
+  revisionHistoryLimit: 3
+  cacheDuration: 23
+  cacheCleanInterval: 14400
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: true

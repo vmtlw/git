@@ -1,0 +1,10 @@
+repositories:
+- name: nextcloud
+  url: https://nextcloud.github.io/helm/
+
+releases:
+- name: nextcloud
+  chart: nextcloud/nextcloud
+  version: 7.0.0
+  values:
+  - ./values.yaml

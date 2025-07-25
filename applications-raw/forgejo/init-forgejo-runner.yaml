@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: init-forgejo-runner
+  namespace: forgejo
+type: Opaque
+stringData:
+  CONFIG_NAME: "runner-kubernetes"
+  CONFIG_INSTANCE: "https://git.vmtlw.ru"
+  CONFIG_TOKEN: "youtoken"

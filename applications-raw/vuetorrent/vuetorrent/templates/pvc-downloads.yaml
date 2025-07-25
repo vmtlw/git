@@ -1,0 +1,14 @@
+{{- if .Values.persistence.downloads.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: qbit-downloads
+  namespace: vuetorrent
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.downloads.size }}
+{{- end }}
+

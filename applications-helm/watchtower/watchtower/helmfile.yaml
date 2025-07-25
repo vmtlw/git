@@ -1,0 +1,9 @@
+repositories:
+  - name: nccloud
+    url: https://nccloud.github.io/charts
+
+releases:
+  - name: watchtower
+    namespace: watchtower
+    chart: nccloud/watchtower
+    version: "1.3.1"

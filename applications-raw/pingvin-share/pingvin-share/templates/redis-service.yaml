@@ -1,0 +1,17 @@
+{{- if .Values.redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pingvin-share.fullname" . }}-redis
+  labels:
+    app: {{ include "pingvin-share.name" . }}
+    component: redis
+spec:
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: 6379
+  selector:
+    app: {{ include "pingvin-share.name" . }}
+    component: redis
+{{- end }}
+

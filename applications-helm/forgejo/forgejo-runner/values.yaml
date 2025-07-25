@@ -1,0 +1,28 @@
+runner:
+  config:
+    create: true
+    existingInitSecret: init-forgejo-runner
+    instance: "https://git.vmtlw.ru"
+    file:
+      runner:
+        labels:
+          - "debian:docker://registry.vmtlw.ru/library/node:20-bullseye"
+#          - "ubuntu:docker://docker.io/library/ubuntu"
+#          - "ubuntu-latest:docker://docker.io/library/ubuntu:latest"
+#          - "ubuntu-22.04:docker://docker.io/library/ubuntu:22.04"
+#          - "ubuntu-20.04:docker://docker.io/library/ubuntu:20.04"
+#          - "busybox:docker://docker.io/library/busybox"
+#          - "node:docker://docker.io/library/node"
+#          - "node-lts:docker://docker.io/library/node:lts"
+#          - "python:docker://docker.io/library/python"
+#          - "python-slim:docker://docker.io/library/python:slim"
+#          - "golang:docker://docker.io/library/golang"
+#          - "golang-alpine:docker://docker.io/library/golang:alpine"
+#          - "debian:docker://docker.io/library/debian"
+#          - "debian-slim:docker://docker.io/library/debian:slim"
+#          - "centos:docker://docker.io/library/centos"
+#          - "fedora:docker://docker.io/library/fedora"
+#          - "busybox:docker://docker.io/library/busybox"
+#          - "scratch:docker://docker.io/library/scratch"
+#          - "dind:docker://docker.io/library/docker:dind"
+

@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: stonith404/pingvin-share
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+env:
+  TRUST_PROXY: "true"
+
+persistence:
+  enabled: true
+  dataPath: /opt/app/backend/data
+  imagesPath: /opt/app/frontend/public/img
+  storageClass: "nfs-csi"
+  size: 1Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: upload.vmtlw.ru
+  tls:
+    enabled: true
+    secretName: pingvin-tls
+    clusterIssuer: letsencrypt-prod
+
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: "7.0-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+  persistence:
+    enabled: false
+    size: 1Gi
+    storageClass: "nfs-csi"
