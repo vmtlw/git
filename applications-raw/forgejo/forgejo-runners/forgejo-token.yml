@@ -1,0 +1,17 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: forgejo-token
+spec:
+  refreshInterval: "15s"
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: forgejo-token
+  dataFrom:
+  - extract:
+      key: forgejo-token
+      metadataPolicy: None
+      conversionStrategy: Default
+      decodingStrategy: None

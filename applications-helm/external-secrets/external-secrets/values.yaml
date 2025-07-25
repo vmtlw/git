@@ -1,0 +1,26 @@
+installCRDs: true
+resources:
+  requests:
+    cpu: 23m
+    memory: 100Mi
+  limits:
+    cpu: 150m
+    memory: 300Mi
+
+webhook:
+  resources:
+    requests:
+      cpu: 15m
+      memory: 100Mi
+    limits:
+      cpu: 150m
+      memory: 300Mi
+
+certController:
+  resources:
+    requests:
+      cpu: 15m
+      memory: 120Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi

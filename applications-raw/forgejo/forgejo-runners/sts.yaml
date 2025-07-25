@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: forgejo-dockerless-runner
+spec:
+  serviceName: forgejo-dockerless-runner
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forgejo-dockerless-runner
+  template:
+    metadata:
+      labels:
+        app: forgejo-dockerless-runner
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: runner
+          image: "gitinsky/dockerless-forgejo-runner:ced6468"
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            readOnlyRootFilesystem: false
+          envFrom:
+            - secretRef:
+                name: forgejo-token
+          env:
+            - name: FORGEJO_URL
+              value: "http://forgejo-http.forgejo.svc.cluster.local:3000"
+          volumeMounts:
+            - name: runner-data
+              mountPath: /home/forgejo/data
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: local-share
+              mountPath: /home/forgejo/.local
+      #volumes:
+      #  - name: tmp-volume
+      #    emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: runner-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 3Gi
+      storageClassName: nfs-csi
+  - metadata:
+      name: local-share
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 3Gi
+      storageClassName: nfs-csi
+  - metadata:
+      name: tmp-volume
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 3Gi
+      storageClassName: nfs-csi

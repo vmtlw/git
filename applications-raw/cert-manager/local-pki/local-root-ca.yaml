@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-root-ca
+spec:
+  isCA: true
+  commonName: "local-root-ca"
+  secretName: local-root-ca-secret
+  duration: 87600h0m0s # 10 years
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  issuerRef:
+    name: selfsigned-root-bootstrap
+    kind: ClusterIssuer

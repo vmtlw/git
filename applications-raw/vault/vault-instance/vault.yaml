@@ -1,0 +1,154 @@
+apiVersion: "vault.banzaicloud.com/v1alpha1"
+kind: "Vault"
+metadata:
+  name: "vault"
+  namespace: vault
+spec:
+  vaultAnnotations:
+    pre.hook.backup.velero.io/container: fsfreeze
+    pre.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--freeze", "/vault/data"]'
+    post.hook.backup.velero.io/container: fsfreeze
+    post.hook.backup.velero.io/command: '["/sbin/fsfreeze", "--unfreeze", "/vault/data"]'
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values: ["vault"]
+            topologyKey: "kubernetes.io/hostname"
+  size: 3
+  image: hashicorp/vault:1.19
+  serviceAccount: default
+  veleroEnabled: true
+  vaultContainers:
+    - name: fsfreeze
+      image: ubuntu:bionic
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: "/vault/data"
+        name: vault-data
+        readOnly: false
+      command:
+        - "/bin/bash"
+        - "-c"
+        - "sleep infinity"
+  # A YAML representation of a final vault config file.
+  # See https://www.vaultproject.io/docs/configuration/ for more information.
+  config:
+    storage:
+      raft:
+        path: /vault/data
+        node_id: "${.Env.POD_NAME}"
+        performance_multiplier: 8
+    listener:
+      tcp:
+        address: "0.0.0.0:8200"
+        # Uncommenting the following line and deleting tls_cert_file and tls_key_file disables TLS
+        # tls_disable: true
+        tls_cert_file: /vault/tls/server.crt
+        tls_key_file: /vault/tls/server.key
+    telemetry:
+      statsd_address: localhost:9125
+    api_addr: https://vault.vault:8200
+    cluster_addr: "https://${.Env.POD_NAME}:8201"
+    ui: true
+    log_level: debug
+
+  # See: https://banzaicloud.com/docs/bank-vaults/cli-tool/#example-external-vault-configuration
+  # The repository also contains a lot examples in the deploy/ and operator/deploy directories.
+  externalConfig:
+    policies:
+      - name: secrets_rw
+        rules: |
+          path "secret/*" {
+            capabilities = ["create", "read", "update", "delete", "list"]
+          }
+      - name: secrets_ro
+        rules: |
+          path "secret/*" {
+            capabilities = ["read", "list"]
+          }
+      - name: vault-secrets-operator
+        rules: |
+          path "secret/*" {
+            capabilities = ["read"]
+          }
+    auth:
+      - type: kubernetes
+        roles:
+          - name: default
+            bound_service_account_names: ["*"]
+            bound_service_account_namespaces: ["external-secrets"]
+            policies: ["secrets_ro"]
+            ttl: 1h
+          - name: vault-secrets-operator
+            bound_service_account_names: ["vault-secrets-operator"]
+            bound_service_account_namespaces: ["vault"]
+            policies: ["vault-secrets-operator"]
+            ttl: 1h
+
+    secrets:
+      - path: secret
+        type: kv
+        description: General secrets.
+        options:
+          version: 2
+
+  vaultEnvsConfig:
+    - name: VAULT_LOG_LEVEL
+      value: debug
+
+  serviceRegistrationEnabled: true
+
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: local-root-ca-issuer
+    spec:
+      rules:
+      - host: vault-pve1.spbnix.local
+        http:
+          paths:
+          - backend:
+              service:
+                name: vault
+                port:
+                  name: api-port
+            path: /
+            pathType: Prefix
+      tls:
+      - hosts:
+        - vault-pve1.spbnix.local
+        secretName: vault-pve1-tls
+
+  resources:
+    # A YAML representation of resource ResourceRequirements for vault container
+    # Detail can reference: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container
+    vault:
+      limits:
+        memory: "512Mi"
+        cpu: "1"
+      requests:
+        memory: "512Mi"
+        cpu: "10m"
+
+  volumeMounts:
+    - name: vault-data
+      mountPath: /vault/data
+
+  # Use local disk to store Vault file data, see config section.
+  volumeClaimTemplates:
+    - metadata:
+        name: vault-data
+      spec:
+        storageClassName: nfs-csi
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 128Mi

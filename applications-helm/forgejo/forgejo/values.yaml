@@ -1,0 +1,77 @@
+replicaCount: 1
+
+gitea:
+  admin:
+    existingSecret: gitea-admin-secret
+    email: 'gitea@gitea.spbnix.local'
+    passwordMode: keepUpdated
+  config:
+    service:
+      DISABLE_REGISTRATION: "true"
+
+postgresql-ha:
+  enabled: false
+
+postgresql:
+  enabled: true
+  diagnosticMode:
+    enabled: false
+  global:
+    postgresql:
+      auth:
+        password: gitea
+        database: gitea
+        username: gitea
+      service:
+        ports:
+          postgresql: 5432
+  primary:
+    persistence:
+      existingClaim: data-forgejo-postgresql-0
+  resources:
+    requests:
+      cpu: 400m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 192Mi
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 16.4.0-debian-12-r9
+
+persistence:
+  enabled: true
+  create: false
+  claimName: gitea-shared-storage
+
+service:
+  http:
+    type: NodePort
+    clusterIP:
+    externalTrafficPolicy: Local
+  ssh:
+    type: NodePort
+    clusterIP:
+
+redis-cluster:
+  enabled: true
+  persistence:
+    storageClass: "ceph-block-3"
+    size: 2Gi
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: local-root-ca-issuer
+  hosts:
+    - host: forgejo-pve1.spbnix.local
+      paths:
+      - port: http
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - forgejo-pve1.spbnix.local
+    secretName: forgejo-pve1-tls
