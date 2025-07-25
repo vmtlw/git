@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:vmtlw/not-so-awesome-gitops-infra-fork.git
-    targetRevision: home
+    repoURL: git@github.com:vmtlw/git.git
+    targetRevision: master
     path: applicationsets
     directory:
       recurse: false

@@ -6,8 +6,8 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: git@github.com:vmtlw/not-so-awesome-gitops-infra-fork.git
-      revision: home
+      repoURL: git@github.com:vmtlw/git.git
+      revision: master
       directories:
       - path: applications-raw/**/*
   template:
@@ -16,8 +16,8 @@ spec:
     spec:
       project: default
       source:
-        repoURL: git@github.com:vmtlw/not-so-awesome-gitops-infra-fork.git
-        targetRevision: 'home'
+        repoURL: git@github.com:vmtlw/git.git
+        targetRevision: 'master'
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
