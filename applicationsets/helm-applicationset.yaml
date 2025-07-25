@@ -21,6 +21,9 @@ spec:
         repoURL: git@github.com:vmtlw/git.git
         targetRevision: 'master'
         path: '{{path}}'
+        helm:
+          valueFiles:
+            - values.yaml
 #        plugin: {}
       destination:
         server: https://kubernetes.default.svc
