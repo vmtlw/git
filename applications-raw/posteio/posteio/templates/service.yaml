@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailserver
+spec:
+  type: ClusterIP
+  selector:
+    app: mailserver
+  ports:
+    - port: 25
+      targetPort: 25
+      name: smtp
+    - port: 110
+      targetPort: 110
+      name: pop3
+    - port: 143
+      targetPort: 143
+      name: imap
+    - port: 465
+      targetPort: 465
+      name: smtps
+    - port: 587
+      targetPort: 587
+      name: starttls-smtp
+    - port: 993
+      targetPort: 993
+      name: imaps
+    - port: 995
+      targetPort: 995
+      name: pop3s
+    - port: 4190
+      targetPort: 4190
+      name: sieve
+    - port: 80
+      targetPort: 80
+      name: http
+    - port: 443
+      targetPort: 443
+      name: https

@@ -1,0 +1,23 @@
+ui:
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: ftp.vmtlw.ru
+        paths:
+          - path: /
+            pathType: Prefix
+
+    tls:
+      - secretName: chart-tls
+        hosts:
+          - ftp.vmtlw.ru
+
+
+persistence:
+  enabled: true
+  pvc:
+    storageClassName: "nfs-csi"
+

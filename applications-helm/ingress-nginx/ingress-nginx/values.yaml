@@ -1,0 +1,26 @@
+controller:
+  hostNetwork: true
+  hostPort:
+    enabled: true
+  kind: DaemonSet
+  dnsPolicy: ClusterFirstWithHostNet
+  service:
+    enabled: false
+  metrics:
+    enabled: false
+  config:
+    allow-snippet-annotations: "true"
+    annotations-risk-level: "Critical"
+
+
+tcp:
+  22: 'forgejo/forgejo-ssh:22'
+  25: 'posteio/mailserver:25'
+  110: 'posteio/mailserver:110'
+  143: 'posteio/mailserver:143'
+  465: 'posteio/mailserver:465'
+  587: 'posteio/mailserver:587'
+  993: 'posteio/mailserver:993'
+  995: 'posteio/mailserver:995'
+  4190: 'posteio/mailserver:4190'
+  25565: 'minecraft/minecraft:25565'

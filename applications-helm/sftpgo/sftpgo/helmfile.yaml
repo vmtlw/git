@@ -1,0 +1,6 @@
+releases:
+- name: sftpgo
+  chart: oci://ghcr.io/sftpgo/helm-charts/sftpgo
+  version: 0.40.0
+  values:
+  - ./values.yaml

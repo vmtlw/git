@@ -1,0 +1,11 @@
+{{- if .Values.persistence.db.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: {{ .Values.persistence.db.size }}
+{{- end }}

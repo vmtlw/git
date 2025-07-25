@@ -1,0 +1,10 @@
+apiVersion: v2
+name: vuetorrent
+description: A Helm chart for qbittorrent with linuxserver image
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - qbittorrent
+  - torrent
+  - linuxserver

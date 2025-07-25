@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pingvin-share.fullname" . }}
+  labels:
+    app: {{ include "pingvin-share.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "pingvin-share.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "pingvin-share.name" . }}
+    spec:
+      containers:
+        - name: pingvin-share
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TRUST_PROXY
+              value: {{ .Values.env.TRUST_PROXY | quote }}
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.dataPath }}
+            - name: images
+              mountPath: {{ .Values.persistence.imagesPath }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "pingvin-share.fullname" . }}-data
+        - name: images
+          persistentVolumeClaim:
+            claimName: {{ include "pingvin-share.fullname" . }}-images
+

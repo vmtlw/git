@@ -1,0 +1,26 @@
+image:
+  repository: solopasha/torrserver
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+env:
+  - name: PUID
+    value: "1000"
+  - name: GUID
+    value: "1000"
+  - name: TZ
+    value: Europe/Moscow
+persistence:
+  db:
+    enabled: true
+    size: 1Gi
+
+ingress:
+  enabled: true
+  host: films.vmtlw.ru
+
+#podSecurityContext:
+#  runAsUser: 0
+#  runAsGroup: 0
+#  fsGroup: 0

@@ -1,0 +1,10 @@
+repositories:
+- name: harbor
+  url:  https://helm.goharbor.io
+
+releases:
+- name: harbor
+  chart: harbor/harbor
+  version: 1.17.1
+  values:
+  - ./values.yaml

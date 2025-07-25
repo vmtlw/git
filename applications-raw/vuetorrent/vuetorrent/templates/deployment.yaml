@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuetorrent
+  namespace: vuetorrent
+  labels:
+    app: vuetorrent
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: vuetorrent
+  template:
+    metadata:
+      labels:
+        app: vuetorrent
+    spec:
+      containers:
+        - name: vuetorrent
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- range .Values.service.ports }}
+            - containerPort: {{ .port }}
+              name: {{ .name }}
+              protocol: {{ .protocol }}
+            {{- end }}
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: UMASK_SET
+              value: "022"
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+            - name: WEBUI_PORT
+              value: "{{ .Values.webuiPort }}"
+            - name: DOCKER_MODS
+              value: "{{ .Values.dockerMods }}"
+            - name: QBT_WEBUI_HOST
+              value: "0.0.0.0"
+            - name: QBT_WEBUI_LOCALHOST
+              value: "false"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: downloads
+              mountPath: /downloads
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: qbit-config
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: qbit-downloads
+

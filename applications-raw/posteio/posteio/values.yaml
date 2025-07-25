@@ -1,0 +1,28 @@
+image:
+  repository: analogic/poste.io
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+hostname: mail.vmtlw.ru
+
+env:
+  - name: TZ
+    value: Europe/Moscow
+
+persistence:
+  data:
+    enabled: true
+    size: 10Gi
+  webmail:
+    enabled: true
+    size: 1Gi
+
+ingress:
+  enabled: true
+  host: mail.vmtlw.ru
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0

@@ -1,0 +1,18 @@
+repositories:
+- name: external-secrets-operator
+  url: https://charts.external-secrets.io
+
+releases:
+- name: external-secrets
+  chart: external-secrets-operator/external-secrets
+  version: 0.19.0
+  values:
+  - ./values.yaml
+  jsonPatches:
+  - target:
+      kind: CustomResourceDefinition
+      version: v1
+    patch:
+      - op: add
+        path: "/metadata/annotations/argocd.argoproj.io~1sync-options"
+        value: "ServerSideApply=true"

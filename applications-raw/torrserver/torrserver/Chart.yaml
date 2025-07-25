@@ -1,0 +1,4 @@
+name: torrserver
+description: Helm chart for torrserver
+version: 0.1.0
+appVersion: "v2"

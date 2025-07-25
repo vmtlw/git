@@ -1,0 +1,18 @@
+app:
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    hosts:
+      - k8s.vmtlw.ru
+    ingressClassName: nginx
+    pathType: ImplementationSpecific
+    path: /
+    issuer: 
+      scope: disabled
+    tls:
+      enabled: true
+      secretName: "vmtlw-tls"
+

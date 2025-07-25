@@ -1,0 +1,17 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-http-https-from-world-and-cluster
+spec:
+  description: "Allow HTTP and HTTPS access from world and"
+  endpointSelector: {}  # Пустой селектор — применяется ко всем подам в кластере
+  ingress:
+    - fromEntities:
+        - world
+        - cluster
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP

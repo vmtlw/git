@@ -1,0 +1,6 @@
+releases:
+- name: guacamole
+  chart: oci://tccr.io/truecharts/guacamole
+  version: 16.2.0
+  values:
+  - ./values.yaml

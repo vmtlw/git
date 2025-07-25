@@ -1,0 +1,44 @@
+domain: https://vault.vmtlw.ru
+replicas: 1
+smtp:
+  host: mail.vmtlw.ru
+  from: admin@vmtlw.ru
+  fromName: "Vault Administrator"
+  existingSecret: smtpsecrets
+  security: "starttls"
+  port: 587
+  username:
+    existingSecretKey: SMTP_USERNAME
+  password:
+    existingSecretKey: SMTP_PASSWORD
+ingress:
+  enabled: true
+  class: "nginx"
+  tlsSecret: vw-tls
+  hostname: vault.vmtlw.ru
+  allowList: "0.0.0.0/0"
+  nginxIngressAnnotations: true
+  additionalAnnotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  tls: true
+  path: "/"
+  pathType: "Prefix"
+
+serviceAccount:
+  create: true
+  name: "vaultwarden-svc"
+
+storage:
+  data:
+    name: "vaultwarden-data"
+    size: "15Gi"
+    class: "nfs-csi"
+    accessMode: "ReadWriteMany"
+  attachments:
+    name: "vaultwarden-data"
+    size: "15Gi"
+    class: "nfs-csi"
+    keepPvc: true
+    accessMode: "ReadWriteMany"
+

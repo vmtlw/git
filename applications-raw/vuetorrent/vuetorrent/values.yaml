@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: linuxserver/qbittorrent
+  tag: latest
+  pullPolicy: IfNotPresent
+
+timezone: Europe/Moscow
+webuiPort: 8090
+dockerMods: "ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest"
+
+ingress:
+  host: download.vmtlw.ru
+
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
+  downloads:
+    enabled: true
+    size: 5Gi
+
+service:
+  ports:
+    - name: tcp-6881
+      port: 6881
+      protocol: TCP
+    - name: udp-6881
+      port: 6881
+      protocol: UDP
+    - name: webui
+      port: 8090
+      protocol: TCP

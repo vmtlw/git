@@ -1,0 +1,72 @@
+env:
+  REDIS_HOSTNAME: '{{ printf "%s-redis-master" .Release.Name }}'
+  DB_HOSTNAME: "pg-vector-rw.immich.svc"
+  DB_USERNAME: "immich"
+  DB_DATABASE_NAME: "immich"
+  DB_PASSWORD: "immich"
+  IMMICH_MACHINE_LEARNING_URL: '{{ printf "http://%s-machine-learning:3003" .Release.Name }}'
+
+image:
+  tag: release
+
+immich:
+  metrics:
+    enabled: false
+  persistence:
+    library:
+      existingClaim: immich-library-pvc
+  configuration: {}
+    
+    # trash:
+    #   enabled: false
+    #   days: 30
+    # storageTemplate:
+    #   enabled: true
+    #   template: "{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}"
+
+
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
+
+server:
+  enabled: true
+  image:
+    repository: ghcr.io/immich-app/immich-server
+    pullPolicy: IfNotPresent
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "nginx"
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/backend-protocol: HTTP
+      hosts:
+        - host: photo.vmtlw.ru
+          paths:
+            - path: "/"
+      tls:
+        - hosts:
+            - photo.vmtlw.ru
+          secretName: vmtlw-tls
+
+machine-learning:
+  enabled: true
+  image:
+    repository: ghcr.io/immich-app/immich-machine-learning
+    pullPolicy: IfNotPresent
+  env:
+    TRANSFORMERS_CACHE: /cache
+  persistence:
+    cache:
+      enabled: true
+      size: 10Gi
+      type: emptyDir
+      accessMode: ReadWriteMany
+      storageClass: nfs-csi
+

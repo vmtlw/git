@@ -1,0 +1,10 @@
+repositories:
+- name: requarks
+  url: https://charts.js.wiki
+
+releases:
+- name: wikijs
+  chart: requarks/wiki
+  version: 2.2.23
+  values:
+  - ./values.yaml

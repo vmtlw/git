@@ -1,0 +1,64 @@
+main:
+  persistence:
+    enabled: true
+    storageClass: "nfs-csi"
+
+  config:
+    n8n:
+      hide_usage_page: false
+  resources:
+    limits:
+      memory: 2048Mi
+    requests:
+      memory: 512Mi
+
+image:
+  repository: n8nio/n8n
+  pullPolicy: IfNotPresent
+  tag: "1.105.4"
+
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  className: "nginx"
+  hosts:
+    - host: workflow.vmtlw.ru
+      paths:
+        - /
+  tls:
+    - hosts:
+        - workflow.vmtlw.ru
+      secretName: workflow-tls
+
+env:
+  - name: N8N_BASIC_AUTH_ACTIVE
+    value: "false"
+  - name: DB_TYPE
+    value: sqlite
+  - name: GENERIC_TIMEZONE
+    value: Europe/Moscow
+  - name: N8N_HOST
+    value: workflow.vmtlw.ru
+  - name: N8N_PORT
+    value: "5678"
+  - name: N8N_PROTOCOL
+    value: https
+  - name: WEBHOOK_URL
+    value: https://workflow.vmtlw.ru/
+  - name: TZ
+    value: Europe/Moscow
+
+persistence:
+  enabled: true
+  storageClass: "nfs-csi"
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+service:
+  type: ClusterIP
+  port: 5678
+
+valkey:
+  enabled: true
+  architecture: standalone

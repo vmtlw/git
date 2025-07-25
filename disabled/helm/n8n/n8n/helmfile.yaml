@@ -1,0 +1,6 @@
+releases:
+- name: n8n
+  chart: oci://8gears.container-registry.com/library/n8n
+  version: 1.0.10
+  values:
+  - ./values.yaml

@@ -1,0 +1,4 @@
+crds:
+  enabled: true
+extraArgs:
+  - --feature-gates=ACMEHTTP01IngressPathTypeExact=false

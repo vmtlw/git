@@ -1,0 +1,10 @@
+repositories:
+- name: immich
+  url: https://immich-app.github.io/immich-charts
+
+releases:
+- name: immich
+  chart: immich/immich
+  version: 0.9.3
+  values:
+  - ./values.yaml

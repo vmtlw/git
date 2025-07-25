@@ -1,0 +1,39 @@
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pingvin-share.fullname" . }}-redis
+  labels:
+    app: {{ include "pingvin-share.name" . }}
+    component: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "pingvin-share.name" . }}
+      component: redis
+  template:
+    metadata:
+      labels:
+        app: {{ include "pingvin-share.name" . }}
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          ports:
+            - containerPort: 6379
+          {{- if .Values.redis.persistence.enabled }}
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          {{- end }}
+      {{- if .Values.redis.persistence.enabled }}
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: {{ include "pingvin-share.fullname" . }}-redis-pvc
+      {{- end }}
+{{- end }}
+
