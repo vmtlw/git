@@ -4,7 +4,7 @@ repositories:
 
 releases:
 - name: csi-driver-nfs
-  chart: csi-driver-nfs
+  chart: csi-driver-nfs/csi-driver-nfs
   version: 4.11.0
   values:
   - ./values.yaml
