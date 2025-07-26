@@ -1,0 +1,14 @@
+storageClass:
+  create: true
+  name: nfs-csi
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  parameters:
+    server: 10.0.0.110
+    share: /srv/nfs
+    subDir: ${pvc.metadata.namespace}-${pv.metadata.name}
+    mountPermissions: "0"
+  reclaimPolicy: Retain
+  volumeBindingMode: Immediate
+  mountOptions:
+    - nfsvers=4.1
