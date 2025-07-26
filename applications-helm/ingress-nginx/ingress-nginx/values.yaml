@@ -1,7 +1,10 @@
 controller:
-  ingressClassResource:
-    default: true
+  hostNetwork: true
+  allowSnippetAnnotations: true
+  kind: DaemonSet
+  dnsPolicy: ClusterFirstWithHostNet
+  service:
+    enabled: false
   metrics:
     enabled: false
-    serviceMonitor:
-      enabled: true
+
