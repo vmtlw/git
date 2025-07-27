@@ -11,119 +11,33 @@ spec:
     targetRevision: 8.2.0
     helm:
       values: |
-        global:
-          addPrometheusAnnotations: true
-          domain: gitops.vmtlw.ru
-          securityContext:
-            fsGroup: 999
-    
-        redis-ha:
-          enabled: false
-    
-        controller:
-          replicas: 1
-    
-        server:
-          replicas: 2
-          ingress:
-            enabled: false
-            annotations:
-              kubernetes.io/ingress.class: nginx
-        #      nginx.ingress.kubernetes.io/server-snippet: |
-        #        proxy_ssl_verify off;
-        #        proxy_set_header X-Forwarded-Proto https;
-        #      ingress.kubernetes.io/protocol: https
-              ingress.kubernetes.io/secure-backends: "true"
-              nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-              cert-manager.io/cluster-issuer: local-root-ca-issuer
-            hostname: argocd-pve1.spbnix.local
-            paths:
-              - /
-            tls:
-              - secretName: argocd-pve1-spbnix-local-tls
-                hosts:
-                  - argocd-pve1.spbnix.local
-    
         repoServer:
-          #existingVolumes:
-          #  helmWorkingDir:
-          #    persistentVolumeClaim:
-          #      claimName: pvc-argocd-repo-server-workdir
-          #  tmp:
-          #    persistentVolumeClaim:
-          #      claimName: pvc-argocd-repo-server-tmp
-          affinity:
-            podAntiAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: argocd-repo-server
-                topologyKey: kubernetes.io/hostname
-          extraArgs:
-            - --parallelismlimit=3
-          repoCacheExpiration: 180
-          replicas: 1
-          volumes:
-            - name: homeargocdcache
-              emptyDir: {}
-            #  persistentVolumeClaim:
-            #    claimName: pvc-argocd-homeargocd
-            - name: homeargocdconfig
-              emptyDir: {}
-            #  persistentVolumeClaim:
-            #    claimName: pvc-argocd-homeargocd-config
-            - name: custom-tools
-              emptyDir: {}
-            - emptyDir:
-                medium: Memory
-              name: helmfile-tmp
-          initContainers:
-            - name: install-kustomize
-              image: alpine:3.13
-              command: ["/bin/sh", "-c"]
-              args:
-                - |
-                  wget -O - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.4.0/kustomize_v4.4.0_linux_amd64.tar.gz | tar xz && mv kustomize /custom-tools/
-              volumeMounts:
-                - mountPath: /custom-tools
-                  name: custom-tools
           extraContainers:
-          - name: plugin
-            image: lucj/argocd-plugin-helmfile:latest
-            command: ["/var/run/argocd/argocd-cmp-server"]
-            securityContext:
-              readOnlyRootFilesystem: false
-              runAsNonRoot: true
-              runAsUser: 999
-            env:
-              - name: PATH
-                value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/custom-tools
-            volumeMounts:
-            - mountPath: /tmp
-              name: helmfile-tmp
-            - mountPath: /var/run/argocd
-              name: var-files
-            - mountPath: /home/argocd/.cache
-              name: homeargocdcache
-            - mountPath: /home/argocd/.config
-              name: homeargocdconfig
-            - mountPath: /home/argocd/cmp-server/plugins
-              name: plugins
-            - mountPath: /custom-tools
-              name: custom-tools
-    
-        applicationSet:
-          replicaCount: 1
-    
-        configs:
-          params:
-            reposerver.parallelism.limit: 3
-          cm:
-            accounts.admin: apiKey
-            timeout.reconciliation: 360s
-#          ssh:
-#            knownHosts: |
-#              gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf
+            - name: cmp-helmfile
+              image: ghcr.io/helmfile/helmfile:v0.157.0
+              imagePullPolicy: IfNotPresent
+              command: [/var/run/argocd/argocd-cmp-server]
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 999
+              volumeMounts:
+                - mountPath: /var/run/argocd
+                  name: var-files
+                - mountPath: /home/argocd/cmp-server/plugins
+                  name: plugins
+                - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                  subPath: plugin.yaml
+                  name: cmp-helmfile
+                - mountPath: /tmp
+                  name: cmp-tmp
+
+          volumes:
+            - name: cmp-helmfile
+              configMap:
+                name: cmp-helmfile
+            - name: cmp-tmp
+              emptyDir: {}
+
 
   destination:
     server: https://kubernetes.default.svc
