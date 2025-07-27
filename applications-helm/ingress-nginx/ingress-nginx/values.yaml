@@ -1,5 +1,7 @@
 controller:
   hostNetwork: true
+  hostPort:
+    enabled: true
   allowSnippetAnnotations: true
   kind: DaemonSet
   dnsPolicy: ClusterFirstWithHostNet
