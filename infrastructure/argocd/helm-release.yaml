@@ -12,37 +12,27 @@ spec:
     helm:
       values: |
         global:
-          addPrometheusAnnotations: false
-          domain: gitops.vmltw.ru
-          securityContext:
-            fsGroup: 999
-
-        redis-ha:
-          enabled: false
-
-        controller:
-          replicas: 1
-
+          domain: gitops.vmtlw.ru
+        configs:
+          cm:
+            create: true
+            exec.enabled: true
+          params:
+            server.insecure: true
         server:
-          replicas: 1
           ingress:
             enabled: true
+            ingressClassName: nginx
             annotations:
-              kubernetes.io/ingress.class: nginx
-              ingress.kubernetes.io/protocol: https
-              ingress.kubernetes.io/secure-backends: "true"
-              nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-            hostname: gitops.vmtlw.ru
-            paths:
-              - /
-            tls:
-              - secretName: tls
-                hosts:
-                  - gitops.vmtlw.ru
-          extraArgs:
-            - --parallelismlimit=3
-          repoCacheExpiration: 180
-          replicas: 1
+              kubernetes.io/ingress.class: "nginx"
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+            tls: true
+            extraTls:
+              - hosts:
+                - gitops.vmtlw.ru
+                secretName: vmtlw-tls
           volumes:
             - name: homeargocdcache
               emptyDir: {}
@@ -87,16 +77,6 @@ spec:
                   name: plugins
                 - mountPath: /custom-tools
                   name: custom-tools
-
-        applicationSet:
-          replicaCount: 1
-
-        configs:
-          params:
-            reposerver.parallelism.limit: 3
-#          ssh:
-#            knownHosts: |
-#              gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf
 
   destination:
     server: https://kubernetes.default.svc
