@@ -30,23 +30,20 @@ spec:
                   name: cmp-helmfile
                 - mountPath: /tmp
                   name: cmp-tmp
-        
-          volumes:
+
+          extraVolumes:
             - name: var-files
               emptyDir: {}
-        
+
             - name: plugins
               emptyDir: {}
-        
+
             - name: cmp-helmfile
               configMap:
                 name: cmp-helmfile
-        
+
             - name: cmp-tmp
               emptyDir: {}
-
-
-
 
   destination:
     server: https://kubernetes.default.svc
@@ -57,3 +54,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
