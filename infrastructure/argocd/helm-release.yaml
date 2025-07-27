@@ -30,13 +30,22 @@ spec:
                   name: cmp-helmfile
                 - mountPath: /tmp
                   name: cmp-tmp
-
+        
           volumes:
+            - name: var-files
+              emptyDir: {}
+        
+            - name: plugins
+              emptyDir: {}
+        
             - name: cmp-helmfile
               configMap:
                 name: cmp-helmfile
+        
             - name: cmp-tmp
               emptyDir: {}
+
+
 
 
   destination:
