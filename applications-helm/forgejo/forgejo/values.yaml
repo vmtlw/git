@@ -13,8 +13,8 @@ persistence:
   enabled: true
   storageClass: nfs-csi
 gitea:
-  admin:
-    existingSecret: gitea-admin-secret
+#  admin:
+#    existingSecret: gitea-admin-secret
   config:
     database:
       DB_TYPE: postgres
