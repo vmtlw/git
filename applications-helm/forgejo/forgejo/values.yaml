@@ -28,6 +28,10 @@ ingress:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - host: git.vmtlw.ru
+      paths:
+        - path: /
+          pathType: Prefix
+          port: http
   tls:
     - secretName: git-vmtlw-ru-tls
       hosts:
