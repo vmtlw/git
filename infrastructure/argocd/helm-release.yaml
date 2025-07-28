@@ -12,39 +12,75 @@ spec:
     helm:
       values: |
         repoServer:
-          extraContainers:
-            - name: cmp-helmfile
-              image: ghcr.io/helmfile/helmfile:v0.157.0
-              imagePullPolicy: IfNotPresent
-              command: [/var/run/argocd/argocd-cmp-server]
-              securityContext:
-                runAsNonRoot: true
-                runAsUser: 999
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: argocd-repo-server
+                topologyKey: kubernetes.io/hostname
+          extraArgs:
+            - --parallelismlimit=3
+          repoCacheExpiration: 180
+          replicas: 1
+          volumes:
+            - name: homeargocdcache
+              emptyDir: {}
+            #  persistentVolumeClaim:
+            #    claimName: pvc-argocd-homeargocd
+            - name: homeargocdconfig
+              emptyDir: {}
+            #  persistentVolumeClaim:
+            #    claimName: pvc-argocd-homeargocd-config
+            - name: custom-tools
+              emptyDir: {}
+            - emptyDir:
+                medium: Memory
+              name: helmfile-tmp
+          initContainers:
+            - name: install-kustomize
+              image: alpine:3.22
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  wget -O - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.7.1/kustomize_v5.7.1_linux_amd64.tar.gz | tar xz && mv kustomize /custom-tools/
               volumeMounts:
-                - mountPath: /var/run/argocd
-                  name: var-files
-                - mountPath: /home/argocd/cmp-server/plugins
-                  name: plugins
-                - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                  subPath: plugin.yaml
-                  name: cmp-helmfile
-                - mountPath: /tmp
-                  name: cmp-tmp
+                - mountPath: /custom-tools
+                  name: custom-tools
+          extraContainers:
+          - name: plugin
+            image: lucj/argocd-plugin-helmfile:latest
+            command: ["/var/run/argocd/argocd-cmp-server"]
+            securityContext:
+              readOnlyRootFilesystem: false
+              runAsNonRoot: true
+              runAsUser: 999
+            env:
+              - name: PATH
+                value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/custom-tools
+            volumeMounts:
+            - mountPath: /tmp
+              name: helmfile-tmp
+            - mountPath: /var/run/argocd
+              name: var-files
+            - mountPath: /home/argocd/.cache
+              name: homeargocdcache
+            - mountPath: /home/argocd/.config
+              name: homeargocdconfig
+            - mountPath: /home/argocd/cmp-server/plugins
+              name: plugins
+            - mountPath: /custom-tools
+              name: custom-tools
 
-          extraVolumes:
-            - name: var-files
-              emptyDir: {}
+        applicationSet:
+          replicaCount: 1
 
-            - name: plugins
-              emptyDir: {}
-
-            - name: cmp-helmfile
-              configMap:
-                name: cmp-helmfile
-
-            - name: cmp-tmp
-              emptyDir: {}
-
+        configs:
+          params:
+            reposerver.parallelism.limit: 3
+          cm:
+            accounts.admin: apiKey
+            timeout.reconciliation: 360s
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
