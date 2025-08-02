@@ -1,5 +1,5 @@
 repositories:
-- name: external-secrets
+- name: external-secrets-operator
   url: https://charts.external-secrets.io
 
 releases:
