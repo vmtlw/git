@@ -5,12 +5,45 @@ metadata:
   namespace: argocd
 spec:
   project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
   source:
-    repoURL: https://argoproj.github.io/argo-helm
+    repoURL: https://charts.example.com/argo  # замените на настоящий URL HelmRepository `argo`
     chart: argo-cd
-    targetRevision: 8.2.0
+    targetRevision: "8.2.1"
     helm:
+      releaseName: argocd
       values: |
+        global:
+          addPrometheusAnnotations: true
+          domain: gitops.vmtlw.ru
+          securityContext:
+            fsGroup: 999
+
+        redis-ha:
+          enabled: false
+
+        controller:
+          replicas: 1
+
+        server:
+          replicas: 1
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: nginx
+              ingress.kubernetes.io/protocol: https
+              ingress.kubernetes.io/secure-backends: "true"
+              nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+            hostname: gitops.vmtlw.ru
+            paths:
+              - /
+            tls:
+              - secretName: gitops-tls
+                hosts:
+                  - gitops.vmtlw.ru
+
         repoServer:
           affinity:
             podAntiAffinity:
@@ -26,12 +59,8 @@ spec:
           volumes:
             - name: homeargocdcache
               emptyDir: {}
-            #  persistentVolumeClaim:
-            #    claimName: pvc-argocd-homeargocd
             - name: homeargocdconfig
               emptyDir: {}
-            #  persistentVolumeClaim:
-            #    claimName: pvc-argocd-homeargocd-config
             - name: custom-tools
               emptyDir: {}
             - emptyDir:
@@ -39,38 +68,38 @@ spec:
               name: helmfile-tmp
           initContainers:
             - name: install-kustomize
-              image: alpine:3.22
+              image: alpine:3.13
               command: ["/bin/sh", "-c"]
               args:
                 - |
-                  wget -O - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.7.1/kustomize_v5.7.1_linux_amd64.tar.gz | tar xz && mv kustomize /custom-tools/
+                  wget -O - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.4.0/kustomize_v4.4.0_linux_amd64.tar.gz | tar xz && mv kustomize /custom-tools/
               volumeMounts:
                 - mountPath: /custom-tools
                   name: custom-tools
           extraContainers:
-          - name: plugin
-            image: lucj/argocd-plugin-helmfile:latest
-            command: ["/var/run/argocd/argocd-cmp-server"]
-            securityContext:
-              readOnlyRootFilesystem: false
-              runAsNonRoot: true
-              runAsUser: 999
-            env:
-              - name: PATH
-                value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/custom-tools
-            volumeMounts:
-            - mountPath: /tmp
-              name: helmfile-tmp
-            - mountPath: /var/run/argocd
-              name: var-files
-            - mountPath: /home/argocd/.cache
-              name: homeargocdcache
-            - mountPath: /home/argocd/.config
-              name: homeargocdconfig
-            - mountPath: /home/argocd/cmp-server/plugins
-              name: plugins
-            - mountPath: /custom-tools
-              name: custom-tools
+            - name: plugin
+              image: lucj/argocd-plugin-helmfile:latest
+              command: ["/var/run/argocd/argocd-cmp-server"]
+              securityContext:
+                readOnlyRootFilesystem: false
+                runAsNonRoot: true
+                runAsUser: 999
+              env:
+                - name: PATH
+                  value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/custom-tools
+              volumeMounts:
+                - mountPath: /tmp
+                  name: helmfile-tmp
+                - mountPath: /var/run/argocd
+                  name: var-files
+                - mountPath: /home/argocd/.cache
+                  name: homeargocdcache
+                - mountPath: /home/argocd/.config
+                  name: homeargocdconfig
+                - mountPath: /home/argocd/cmp-server/plugins
+                  name: plugins
+                - mountPath: /custom-tools
+                  name: custom-tools
 
         applicationSet:
           replicaCount: 1
@@ -81,9 +110,10 @@ spec:
           cm:
             accounts.admin: apiKey
             timeout.reconciliation: 360s
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
+          ssh:
+            knownHosts: |
+              gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL51K6rml7IkrY85AcrKDk267ioXdeBoLMZw0pKyOfyX
+
   syncPolicy:
     automated:
       prune: true
