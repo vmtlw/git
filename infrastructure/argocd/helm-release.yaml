@@ -33,7 +33,7 @@ spec:
             enabled: true
             ingressClassName: nginx
             annotations:
-              ingress.kubernetes.io/protocol: https
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
               nginx.ingress.kubernetes.io/backend-protocol: HTTP
               nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
             tls: true
