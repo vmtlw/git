@@ -1,0 +1,6 @@
+releases:
+- name: vaultwarden
+  chart: https://guerzon.github.io/vaultwarden
+  version:  0.32.4
+  values:
+  - ./values.yaml
