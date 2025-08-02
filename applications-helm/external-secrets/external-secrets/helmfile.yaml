@@ -1,0 +1,10 @@
+repositories:
+- name: jetstack
+  url: https://charts.external-secrets.io
+
+releases:
+- name: external-secrets
+  chart: external-secrets-operator/external-secrets
+  version: 0.18.2
+  values:
+  - ./values.yaml
