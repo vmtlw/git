@@ -107,9 +107,6 @@ spec:
         configs:
           params:
             reposerver.parallelism.limit: 3
-          cm:
-            accounts.admin: apiKey
-            timeout.reconciliation: 360s
 
   syncPolicy:
     automated:
