@@ -1,5 +1,5 @@
 repositories:
-- name: jetstack
+- name: external-secrets
   url: https://charts.external-secrets.io
 
 releases:
