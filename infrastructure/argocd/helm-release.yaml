@@ -9,9 +9,9 @@ spec:
     server: https://kubernetes.default.svc
     namespace: argocd
   source:
-    repoURL: https://charts.example.com/argo  # замените на настоящий URL HelmRepository `argo`
+    repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: "8.2.1"
+    targetRevision: "8.2.5"
     helm:
       releaseName: argocd
       values: |
