@@ -15,19 +15,6 @@ serviceAccount:
   create: true
   name: gitlab-runner
 
-cache:
-  secretName: s3access
-
-extraEnvFrom:
-  CACHE_S3_ACCESS_KEY:
-    secretKeyRef:
-      name: s3access
-      key: accesskey
-  CACHE_S3_SECRET_KEY:
-    secretKeyRef:
-      name: s3access
-      key: secretkey
-
 runners:
   secret: gitlab-runner
   secretVariable: runner-registration-token
@@ -45,6 +32,16 @@ runners:
         memory_request = "128Mi"
         cpu_limit = "2"
         memory_limit = "6G"
+      [runners.cache]
+        Type = "s3"
+        Path = "/gitlab-runner"
+        Shared = true
+        [runners.cache.s3]
+          ServerAddress = "s3.vmtlw.ru"
+          AccessKey = ""
+          SecretKey = ""
+          BucketName = "gitlab-runner"
+          BucketLocation = ""
 
   runUntagged: false
   locked: false
