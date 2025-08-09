@@ -6,15 +6,9 @@ rbac:
   create: true
 unregisterRunners: true
 
-
 serviceAccount:
   create: true
   name: gitlab-runner
-
-cache:
-  enabled: true
-  storageClass: nfs-csi
-  size:20Gi
 
 runners:
   secret: gitlab-runner
@@ -34,10 +28,7 @@ runners:
         cpu_limit = "2"
         memory_limit = "6G"
       [runners.cache]
-        Type = "volume"
-        Path = "/cache"
-        Shared = true
-
+        Type = "emptyDir"
   runUntagged: false
   locked: false
   tagList:
