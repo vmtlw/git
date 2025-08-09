@@ -6,5 +6,5 @@ runner:
     file:
       runner:
         labels:
-           - "alpine:docker://alpine"
+           -  "docker:docker://data.forgejo.org/oci/node:21-bullseye"
     
