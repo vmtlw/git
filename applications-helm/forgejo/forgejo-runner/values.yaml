@@ -3,4 +3,8 @@ runner:
     create: true
     existingInitSecret: init-forgejo-runner
     instance: "https://git.vmtlw.ru"
+    file:
+      runner:
+        labels:
+           - "alpine:docker://alpine"
     
