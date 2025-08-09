@@ -33,9 +33,16 @@ runners:
         cpu_limit = "2"
         memory_limit = "6G"
       [runners.cache]
+        Type = "volume"
+        Path = "/cache"
+        Shared = true
 
   runUntagged: false
   locked: false
   tagList:
     - kubernetes
   privileged: true
+
+volumeMounts:
+  - name: gitlab-runner-cache
+    mountPath: /cache
