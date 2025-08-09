@@ -1,0 +1,6 @@
+runner:
+  config:
+    create: true
+    existingInitSecret: init-forgejo-runner
+    instance: "https://git.vmtlw.ru"
+    
