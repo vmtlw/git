@@ -20,6 +20,7 @@ ingress:
     - secretName: tls
       hosts:
         - s3.vmtlw.ru
+mode: standalone
 
 consoleIngress:
   enabled: true
