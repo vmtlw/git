@@ -15,7 +15,7 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   path: /
   hosts:
-    - s3-admin.vmtlw.ru
+    - s3.vmtlw.ru
   tls: 
     - secretName: tls
       hosts:
