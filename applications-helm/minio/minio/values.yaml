@@ -7,7 +7,7 @@ persistence:
 
 console:
   enabled: true
-
+minioConsolePort: "443"
 ingress:
   enabled: true
   ingressClassName: nginx
