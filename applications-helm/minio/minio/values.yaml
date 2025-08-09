@@ -1,12 +1,16 @@
 replicas: 1
+extraArgs:
+  - --console-address=:9001
 
 persistence:
   enabled: true
   size: 10Gi
   storageClass: "nfs-csi"
 
-console:
-  enabled: true
+consoleService:
+  type: ClusterIP
+  port: "9001"
+
 ingress:
   enabled: true
   ingressClassName: nginx
@@ -26,6 +30,7 @@ consoleIngress:
   ingressClassName: ~
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
   path: /
   hosts:
     - s3-admin.vmtlw.ru
