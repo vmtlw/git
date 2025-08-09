@@ -32,7 +32,7 @@ ingress:
   hosts:
     - s3-admin.vmtlw.ru
   tls: 
-    - secretName: chart-example-tls
+    - secretName: tls
       hosts:
         - s3.vmtlw.ru
 
@@ -47,7 +47,7 @@ consoleIngress:
   hosts:
     - s3-admin.vmtlw.ru
   tls: 
-    - secretName: chart-example-tls
+    - secretName: admin-tls
       hosts:
         - s3-admin.vmtlw.ru
 
