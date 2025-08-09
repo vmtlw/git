@@ -7,10 +7,6 @@ persistence:
   size: 10Gi
   storageClass: "nfs-csi"
 
-consoleService:
-  type: ClusterIP
-  port: "9001"
-
 ingress:
   enabled: true
   ingressClassName: nginx
@@ -27,7 +23,7 @@ mode: standalone
 
 consoleIngress:
   enabled: true
-  ingressClassName: ~
+  ingressClassName: nginx
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
