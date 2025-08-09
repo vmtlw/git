@@ -35,6 +35,7 @@ ingress:
   enabled: true
   className: nginx
   annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 3000m
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - host: git.vmtlw.ru
