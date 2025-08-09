@@ -46,3 +46,8 @@ runners:
 volumeMounts:
   - name: gitlab-runner-cache
     mountPath: /cache
+
+volumes:
+  - name: gitlab-runner-cache
+    persistentVolumeClaim:
+      claimName: gitlab-runner-cache
