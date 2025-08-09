@@ -34,7 +34,7 @@ runners:
         memory_limit = "6G"
       [runners.cache]
         Type = "s3"
-        Path = "/gitlab-runner"
+        Path = "/"
         Shared = true
         [runners.cache.s3]
           ServerAddress = "s3.vmtlw.ru"
