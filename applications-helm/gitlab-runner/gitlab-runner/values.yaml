@@ -1,0 +1,37 @@
+gitlabUrl: https://gitlab.com/
+concurrent: 10
+checkInterval: 30
+
+rbac:
+  create: true
+unregisterRunners: true
+
+serviceAccount:
+  create: true
+  name: gitlab-runner
+
+runners:
+  secret: gitlab-runner
+  secretVariable: runner-registration-token
+  config: |
+    [[runners]]
+      name = "k8s-runner"
+      url = "https://gitlab.com/"
+      token = "$REGISTRATION_TOKEN"
+      executor = "kubernetes"
+      [runners.kubernetes]
+        namespace = "gitlab-runner"
+        image = "alpine:latest"
+        privileged = true
+        cpu_request = "100m"
+        memory_request = "128Mi"
+        cpu_limit = "2"
+        memory_limit = "6G"
+      [runners.cache]
+        Type = "emptyDir"
+  runUntagged: false
+  locked: false
+  tagList:
+    - kubernetes
+  privileged: true
+
