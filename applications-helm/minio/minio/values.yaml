@@ -1,0 +1,44 @@
+accessKey: "minioadmin"
+secretKey: "minioadmin"
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: "nfs-csi"
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+service:
+  type: ClusterIP
+  port: 9000
+
+console:
+  enabled: true
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+  hosts:
+    - host: s3.vmltw.ru
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - s3.vmltw.ru
+      secretName: minio-tls
+
+certmanager:
+  enabled: true
+
+
+
