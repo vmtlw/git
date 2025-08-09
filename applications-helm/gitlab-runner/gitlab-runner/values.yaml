@@ -15,8 +15,12 @@ serviceAccount:
 
 cache:
   enabled: true
-  storageClass: nfs-csi
-  size: 20Gi
+  s3:
+    serverAddress: s3.vmtlw.ru
+    bucketName: gitlab-runner
+    accessKey: ""
+    secretKey: ""
+    insecure: true
 
 runners:
   secret: gitlab-runner
@@ -44,12 +48,3 @@ runners:
   tagList:
     - kubernetes
   privileged: true
-
-volumeMounts:
-  - name: gitlab-runner-cache
-    mountPath: /cache
-
-volumes:
-  - name: gitlab-runner-cache
-    persistentVolumeClaim:
-      claimName: gitlab-runner-cache
