@@ -3,8 +3,10 @@ concurrent: 10
 checkInterval: 30
 
 extraEnv:
-  RUNNER_CACHE_DIR: /cache
-
+  CACHE_S3_SERVER_ADDRESS: s3.vmtlw.ru
+  CACHE_S3_BUCKET_NAME: gitlab-runner
+  CACHE_S3_BUCKET_LOCATION: ""
+  CACHE_SHARED: true
 rbac:
   create: true
 unregisterRunners: true
@@ -14,13 +16,17 @@ serviceAccount:
   name: gitlab-runner
 
 cache:
-  enabled: true
-  s3:
-    serverAddress: s3.vmtlw.ru
-    bucketName: gitlab-runner
-    accessKey: ""
-    secretKey: ""
-    insecure: true
+  secretName: s3access
+
+extraEnvFrom:
+  CACHE_S3_ACCESS_KEY:
+    secretKeyRef:
+      name: s3access
+      key: accesskey
+  CACHE_S3_SECRET_KEY:
+    secretKeyRef:
+      name: s3access
+      key: secretkey
 
 runners:
   secret: gitlab-runner
@@ -39,9 +45,6 @@ runners:
         memory_request = "128Mi"
         cpu_limit = "2"
         memory_limit = "6G"
-      [[runners.kubernetes.volumes.pvc]]
-        name = "gitlab-runner-cache"
-        mount_path = "/cache"
 
   runUntagged: false
   locked: false
