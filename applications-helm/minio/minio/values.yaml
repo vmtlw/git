@@ -26,18 +26,27 @@ ingress:
   ingressClassName: nginx
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  path: /
   hosts:
-    - host: s3.vmltw.ru
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - hosts:
-        - s3.vmltw.ru
-      secretName: minio-tls
+    - s3-admin.vmtlw.ru
+  tls: 
+    - secretName: chart-example-tls
+      hosts:
+        - s3.vmtlw.ru
 
-certmanager:
+
+
+consoleIngress:
   enabled: true
-
+  ingressClassName: ~
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  path: /
+  hosts:
+    - s3-admin.vmtlw.ru
+  tls: 
+    - secretName: chart-example-tls
+      hosts:
+        - s3-admin.vmtlw.ru
 
 
