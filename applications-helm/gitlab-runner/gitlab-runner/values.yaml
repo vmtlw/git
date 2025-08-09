@@ -17,6 +17,8 @@ serviceAccount:
 
 runners:
   secret: gitlab-runner
+  cache:
+    secretName: s3access
   secretVariable: runner-registration-token
   config: |
     [[runners]]
