@@ -7,7 +7,6 @@ persistence:
 
 console:
   enabled: true
-minioConsolePort: "443"
 ingress:
   enabled: true
   ingressClassName: nginx
@@ -36,3 +35,6 @@ consoleIngress:
         - s3-admin.vmtlw.ru
 
 
+consoleService:
+  type: ClusterIP
+  port: "443"
