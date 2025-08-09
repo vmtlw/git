@@ -40,8 +40,8 @@ runners:
         Shared = true
         [runners.cache.s3]
           ServerAddress = "s3.vmtlw.ru"
-          AccessKey = ""
-          SecretKey = ""
+          AccessKey = "gitlab-runner-key"
+          SecretKey = "gitlab-runner-key"
           BucketName = "gitlab-runner"
           BucketLocation = ""
 
