@@ -6,6 +6,6 @@ releases:
   - name: minio
     namespace: minio
     chart: minio/minio
-    version: "8.0.10"
+    version: "5.4.0"
     values:
       - values.yaml
