@@ -18,7 +18,7 @@ spec:
           command:
             - sh
             - -c
-            - chown -R nobody:nogroup /srv/data
+            - chown -R 65534:65534 /srv/data
           volumeMounts:
             - name: data
               mountPath: /srv/data
