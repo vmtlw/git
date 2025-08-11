@@ -38,3 +38,6 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "privatebin.fullname" . }}-pvc
+        - name: privatebin-config
+          configMap:
+            name: privatebin-config
