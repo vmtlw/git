@@ -22,11 +22,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             limits:
-              cpu: 300m
-              memory: 1700Mi
+              cpu: 600m
+              memory: 700Mi
             requests:
-              cpu: 200m
-              memory: 1270Mi
+              cpu: 300m
+              memory: 400Mi
           ports:
             - containerPort: 25
             - containerPort: 110
