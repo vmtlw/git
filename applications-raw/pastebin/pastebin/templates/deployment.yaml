@@ -12,6 +12,16 @@ spec:
       labels:
         app: {{ include "privatebin.name" . }}
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - chown -R nobody:nogroup /srv/data
+          volumeMounts:
+            - name: data
+              mountPath: /srv/data
       containers:
         - name: privatebin
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -21,6 +31,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /srv/data
+            - name: privatebin-config
+              mountPath: /srv/lib/Configuration.php
+              subPath: Configuration.php
       volumes:
         - name: data
           persistentVolumeClaim:
