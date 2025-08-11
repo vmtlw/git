@@ -22,10 +22,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             limits:
-              cpu: 600m
+              cpu: 1600m
               memory: 2000Mi
             requests:
-              cpu: 300m
+              cpu: 1300m
               memory: 1000Mi
           ports:
             - containerPort: 25
@@ -38,15 +38,6 @@ spec:
             - containerPort: 80
           securityContext:
             privileged: true
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 3
-            periodSeconds: 5
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 5
           env:
             {{- toYaml .Values.env | nindent 12 }}
           volumeMounts:
