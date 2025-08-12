@@ -27,4 +27,5 @@ tcp:
   2022: 'sftpgo/sftpgo:2022'
   3100: 'monitoring/loki:3100'
   4190: 'posteio/mailserver:4190'
-  25565: 'minecraft/minecraft:25565'
+  #25565: 'minecraft/minecraft:25565'
+  30080: 'keycloak/keycloack:30080'
