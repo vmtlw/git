@@ -32,4 +32,14 @@ extraEnvVars:
   - name: VERTX_EVENT_LOOP_POOL_SIZE
     value: "8"
 
-
+ingress:
+  enabled: true
+  pathType: ImplementationSpecific
+  hostname: id.vmtlw.ru
+  ingressClassName: "nginx"
+  path: "{{ .Values.httpRelativePath }}"
+  servicePort: http
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls: true
+  selfSigned: false
