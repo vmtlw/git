@@ -1,10 +1,10 @@
 repositories:
-- name: bitnami
-  url: https://charts.bitnami.com/bitnami
+- name: codecentric
+  url: https://codecentric.github.io/helm-charts
 
 releases:
-- name: keycloak
-  chart: bitnami/keycloak
-  version: 25.0.2
+- name: keycloakx
+  chart: codecentric/keycloakx
+  version: 7.1.1
   values:
   - ./values.yaml

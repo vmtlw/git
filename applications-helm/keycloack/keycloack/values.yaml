@@ -1,45 +1,30 @@
-# Global PostgreSQL settings
-global:
-  postgresql:
-    auth:
-      username: bn_keycloak
-      password: bn_keycloak
-      database: bitnami_keycloak
-
-# Keycloak Admin User Configuration
-auth:
-  adminUser: admin
-  adminPassword: admin
-
-# PostgreSQL Specific Configuration
-postgresql:
-  enabled: true
-  auth:
-    username: bn_keycloak
-    password: bn_keycloak
-    database: bitnami_keycloak
-
-# Additional Keycloak Environment Variables
-extraEnvVars:
-  - name: KC_PRODUCTION
-    value: "true"
-  - name: KC_HOSTNAME_STRICT
-    value: "false"
-  - name: KC_HTTP_ENABLED
-    value: "true"
-  - name: VERTX_WORKER_POOL_SIZE
-    value: "20"
-  - name: VERTX_EVENT_LOOP_POOL_SIZE
-    value: "8"
+command:
+  - "/opt/keycloak/bin/kc.sh"
+  - "start"
+  - "--http-port=8080"
+  - "--hostname-strict=false"
+extraEnv: |
+  - name: KEYCLOAK_ADMIN
+    value: admin
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    value: admin
+  - name: JAVA_OPTS_APPEND
+    value: >-
+      -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
 
 ingress:
   enabled: true
-  pathType: ImplementationSpecific
-  hostname: id.vmtlw.ru
   ingressClassName: "nginx"
-  path: "{{ .Values.httpRelativePath }}"
   servicePort: http
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-  tls: true
-  selfSigned: false
+  rules:
+    -
+      host: id.vmtlw.ru
+      paths:
+        - path: '{{ tpl .Values.http.relativePath $ | trimSuffix "/" }}/'
+          pathType: Prefix
+  tls:
+    - hosts:
+        - id.vmtlw.ru
+      secretName: "anon-tls"
