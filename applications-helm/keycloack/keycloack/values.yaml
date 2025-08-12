@@ -28,3 +28,21 @@ ingress:
     - hosts:
         - id.vmtlw.ru
       secretName: "anon-tls"
+
+
+console:
+  enabled: true
+  ingressClassName: "nginx"
+  servicePort: http
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    rules:
+      -
+        host: id.vmtlw.ru
+        paths:
+          - path: '{{ tpl .Values.http.relativePath $ | trimSuffix "/" }}/admin'
+            pathType: Prefix
+  tls:
+    - hosts:
+        - id.vmtlw.ru
+      secretName: "anon-tls"
