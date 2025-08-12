@@ -18,6 +18,7 @@ ingress:
   servicePort: http
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
   rules:
     -
       host: id.vmtlw.ru
@@ -36,6 +37,7 @@ console:
   servicePort: http
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
     rules:
       -
         host: id.vmtlw.ru
