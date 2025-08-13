@@ -1,0 +1,10 @@
+repositories:
+- name: mattermost
+  url:  https://helm.mattermost.com
+
+releases:
+- name: mattermost-operator
+  chart: mattermost/mattermost-operator
+  version: 1.0.4
+  values:
+  - ./values.yaml
