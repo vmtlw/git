@@ -48,7 +48,11 @@ prometheus:
             requests:
               storage: 50Gi
     additionalScrapeConfigs:
-      - job_name: 'external-node'
+      - job_name: 'debian-server'
         scrape_interval: 15s
         static_configs:
           - targets: ['10.0.0.5:9100']
+      - job_name: 'openwrt-node'
+        scrape_interval: 15s
+        static_configs:
+          - targets: ['10.0.0.1:9100']
