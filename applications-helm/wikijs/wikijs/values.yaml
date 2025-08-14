@@ -1,4 +1,4 @@
-replicacount: 1
+replicacount: 0
 postgresql:
   persistence:
     enabled: true
