@@ -62,15 +62,15 @@ community:
       dataEncryptionKey: "data encryption key with 32 char"
 
     urls:
-      base: "http://test.vmtlw.ru"
-      shortcode: "http://test.vmtlw.ru"
-      admin: "http://admin.example.com"
+      base: "http://hoppscotch.vmtlw.ru"
+      shortcode: "http://hoppscotch.vmtlw.ru"
+      admin: "http://admin.hoppscotch.vmtlw.ru"
       backend:
-        gql: "http://backend.example.com/graphql"
-        ws: "ws://backend.example.com/graphql"
-        api: "http://backend.example.com/v1"
-      redirect: "http://test.vmtlw.ru"
-      whitelistedOrigins: "http://backend.example.com,http://test.vmtlw.ru,http://admin.example.com"
+        gql: "http://backend.hoppscotch.vmtlw.ru/graphql"
+        ws: "ws://backend.hoppscotch.vmtlw.ru/graphql"
+        api: "http://backend.hoppscotch.vmtlw.ru/v1"
+      redirect: "http://hoppscotch.vmtlw.ru"
+      whitelistedOrigins: "http://backend.hoppscotch.vmtlw.ru,http://hoppscotch.vmtlw.ru,http://admin.hoppscotch.vmtlw.ru"
 
     auth:
       allowedProviders: "EMAIL" # "GOOGLE,MICROSOFT,GITHUB,EMAIL"
@@ -79,7 +79,7 @@ community:
       google:
         clientId:  "" # "dummyGoogleClientId"
         clientSecret:  "" # "dummyGoogleClientSecret"
-        callbackUrl:  "" # "http://backend.example.com/v1/auth/google/callback"
+        callbackUrl:  "" # "http://backend.hoppscotch.vmtlw.ru/v1/auth/google/callback"
         scope:  "" # "email,profile"
 
       github:
@@ -113,7 +113,6 @@ service:
   app: hoppscotch-community
   # Dynamically set based on ingress
   type: "{{ .Values.service.ingress.enabled | ternary \"ClusterIP\" \"LoadBalancer\" }}"
-  # Only set externalTrafficPolicy for LoadBalancer
   externalTrafficPolicy: "{{ .Values.service.ingress.enabled | ternary \"\" \"Cluster\" }}"
 
   ports:
@@ -148,11 +147,9 @@ service:
     className: nginx 
 
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-
-  # TLS Configuration
-    tls:
-      enabled: true
-      secretName: hoppscotch-tls
+    cert-manager.io/cluster-issuer: "letsencrypt-prod'
+  tls:
+    enabled: true
+    secretName: hoppscotch-tls
