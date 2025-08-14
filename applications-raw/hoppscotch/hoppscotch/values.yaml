@@ -153,6 +153,6 @@ service:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
   # TLS Configuration
-  tls:
-    enabled: true
-    secretName: hoppscotch-tls
+    tls:
+      enabled: true
+      secretName: hoppscotch-tls
